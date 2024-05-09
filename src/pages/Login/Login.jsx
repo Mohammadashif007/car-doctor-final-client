@@ -1,24 +1,36 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/login/login.svg";
 import { useContext } from "react";
-// import { AuthContext } from "../../providers/authProviders";
+import { AuthContext } from "../../Providers/AuthProviders";
+import axios from "axios";
 
 const Login = () => {
-    // const {loginUser} = useContext(AuthContext);
+    const { loginUser } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
+    console.log(from);
 
-    const handleForm = event => {
+    const handleForm = (event) => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        // loginUser(email, password)
-        // .then(res => {
-        //     const result = res.user;
-        //     console.log(result);
-        // })
-        // .then(err => console.log(err))
-        
-    }
+        loginUser(email, password)
+            .then((res) => {
+                const result = res.user;
+                axios
+                    .post("http://localhost:3000/jwt", email, {
+                        withCredentials: true,
+                    })
+                    .then((res) => {
+                        if(res.data){
+                            navigate(from, { replace: true });
+                        }
+                    });
+            })
+            .catch((err) => console.log(err.message));
+    };
 
     return (
         <div className="hero min-h-screen bg-base-200">
@@ -70,7 +82,12 @@ const Login = () => {
                                 </button>
                             </div>
                         </form>
-                        <p className="font-semibold">New to this site? <Link to='/signup' className="text-orange-600 ">Sign Up</Link></p>
+                        <p className="font-semibold">
+                            New to this site?{" "}
+                            <Link to="/signup" className="text-orange-600 ">
+                                Sign Up
+                            </Link>
+                        </p>
                     </div>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import Service from "./Service";
 const Services = () => {
     const [services, setServices] = useState([]);
 
-    const url = "services.json";
+    const url = "http://localhost:3000/services";
 
     const loadServicesData = async () => {
         const res = await fetch(url);
